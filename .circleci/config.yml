@@ -3,7 +3,10 @@ jobs:
   build:
     working_directory: ~/build
     docker:
-      - image: circleci/python:3.6
+      - image: $REGISTRY_URL/circleci-base:alpine-latest
+        aws_auth:
+          aws_access_key_id: $AWS_ACCESS_KEY_ID
+          aws_secret_access_key: $AWS_SECRET_ACCESS_KEY
     steps:
       - checkout
       - setup_docker_engine
@@ -12,8 +15,10 @@ jobs:
           command: |
             APP=${CIRCLE_PROJECT_REPONAME}
             TAG=${CIRCLE_SHA1:0:7}
-            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} quay.io
-            docker build -t quay.io/collectai/${APP}:${TAG} .
-            docker push quay.io/collectai/${APP}:${TAG}
-            docker tag quay.io/collectai/${APP}:${TAG} quay.io/collectai/${APP}:latest
-            docker push quay.io/collectai/${APP}:latest
+
+            $(aws ecr get-login --no-include-email --region eu-central-1)
+
+            docker build -t ${REGISTRY_URL}/${APP}:${TAG} .
+            docker push ${REGISTRY_URL}/${APP}:${TAG}
+            docker tag ${REGISTRY_URL}/${APP}:${TAG} ${REGISTRY_URL}/${APP}:latest
+            docker push ${REGISTRY_URL}/${APP}:latest
