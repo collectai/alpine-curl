@@ -4,5 +4,5 @@ Serves as base image of curl based kubernetes [cron-jobs](https://kubernetes.io/
 
 ## Usage
 ```
-docker run quay.io/collectai/alpine-curl curl -v http://google.com
+docker run 559151583148.dkr.ecr.eu-central-1.amazonaws.com/alpine-curl curl -v http://google.com
 ```
